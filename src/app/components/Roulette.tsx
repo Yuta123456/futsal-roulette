@@ -1,20 +1,25 @@
 "use client";
 import { FC, useEffect, useRef, useState } from "react";
-import { rouletteItems } from "../rouletteItems/rouletteItems";
+import { Button } from "@chakra-ui/react";
+import { RouletteItem } from "../rouletteItems/rouletteItems";
 
-type RouletteProps = {};
+type RouletteProps = {
+  rouletteItems: RouletteItem[];
+  onStop?: (stop: RouletteItem) => void;
+};
 
 const size = {
   x: 300,
   y: 300,
 };
 const radius = 100;
-const unitWeight = 360 / rouletteItems.length;
+
 let degOffset = 0;
 const initialAcceleration = 100;
 let acceleration = initialAcceleration;
-export const Roulette: FC<RouletteProps> = () => {
+export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const unitWeight = 360 / rouletteItems.length;
   const [result, setResult] = useState<string>();
   const [isMoving, setIsMoving] = useState(false);
   const [isStopping, setIsStopping] = useState(true);
@@ -116,11 +121,14 @@ export const Roulette: FC<RouletteProps> = () => {
       acceleration = initialAcceleration;
       const currentDeg = Math.ceil(degOffset % 360);
       console.log(currentDeg);
-      setResult(() => {
-        return rouletteItems.find((_, i) => {
-          return currentDeg <= (i + 1) * unitWeight;
-        })?.name;
+      const stopRouletteItem = rouletteItems.find((_, i) => {
+        return currentDeg <= (i + 1) * unitWeight;
       });
+      if (stopRouletteItem === undefined) {
+        return;
+      }
+      setResult(stopRouletteItem.name);
+      onStop && onStop(stopRouletteItem);
       setIsMoving(false);
     }, 10);
   };
@@ -130,26 +138,26 @@ export const Roulette: FC<RouletteProps> = () => {
   return (
     <>
       <canvas className="canvas" ref={canvasRef} />
-      <button
+      <Button
         onClick={() => {
           runRoulette();
           setIsMoving(true);
           setIsStopping(false);
         }}
-        disabled={isMoving}
+        isDisabled={isMoving || !onStop}
       >
         start
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={() => {
           clearInterval(rouletteTimer);
           stopRoulette();
           setIsStopping(true);
         }}
-        disabled={isStopping}
+        isDisabled={isStopping || !onStop}
       >
         stop
-      </button>
+      </Button>
       <div>{result}</div>
     </>
   );
