@@ -6,21 +6,26 @@ import { RouletteItem } from "../rouletteItems/rouletteItems";
 type RouletteProps = {
   rouletteItems: RouletteItem[];
   onStop?: (stop: RouletteItem) => void;
+  onNext?: (id: number) => void;
 };
 
 const size = {
-  x: 300,
-  y: 300,
+  x: 375,
+  y: 375,
 };
 const radius = 100;
 
 let degOffset = 0;
 const initialAcceleration = 100;
 let acceleration = initialAcceleration;
-export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
+export const Roulette: FC<RouletteProps> = ({
+  rouletteItems,
+  onStop,
+  onNext,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const unitWeight = 360 / rouletteItems.length;
-  const [result, setResult] = useState<string>();
+  const [result, setResult] = useState<RouletteItem>();
   const [isMoving, setIsMoving] = useState(false);
   const [isStopping, setIsStopping] = useState(true);
   const [rouletteTimer, setRouletteTimer] = useState<NodeJS.Timer>();
@@ -39,9 +44,6 @@ export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
     if (canvas === null) {
       return;
     }
-    ctx.fillRect(0, 0, 100, 100);
-    // ctxの保存
-    ctx.save();
 
     canvas.width = size.x;
     canvas.height = size.y;
@@ -50,36 +52,51 @@ export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
       image.data[i] = 255;
     }
     ctx.putImageData(image, 0, 0);
-    drawRoulette(0);
+    drawRoulette(degOffset);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [rouletteItems]);
 
   function drawPie(
     start_deg: number,
     end_deg: number,
     radius: number,
-    color: string
+    color: string,
+    text: string
   ) {
     let _start_deg = ((360 - start_deg) * Math.PI) / 180;
     let _end_deg = ((360 - end_deg) * Math.PI) / 180;
+    console.log(_start_deg, _end_deg, text);
     const ctx = getContext();
     if (ctx === null || ctx === undefined) {
       return;
     }
     ctx.beginPath();
     ctx.moveTo(size.x / 2, size.y / 2);
-    ctx.fillStyle = color; // 塗りつぶしの色は赤
+    ctx.fillStyle = color;
     ctx.arc(size.x / 2, size.y / 2, radius, _start_deg, _end_deg, true);
     ctx.fill();
+    ctx.fillStyle = "black";
+    ctx.font = "13px Roboto medium";
+    const textCenter = (_start_deg + _end_deg) / 2;
+    const textX = size.x / 2 + (radius / 2) * Math.cos(textCenter);
+    const textY = size.y / 2 + (radius / 2) * Math.sin(textCenter);
+    ctx.fillText(text, textX - text.length * 6, textY + 10);
 
     showArrow();
   }
   function drawRoulette(offset: number) {
+    console.log(offset % 360);
+    const ctx = getContext();
+    if (ctx === null || ctx === undefined) {
+      return;
+    }
+    ctx.clearRect(0, 0, size.x, size.y);
     let uwCount = offset;
 
     rouletteItems.forEach((e) => {
-      drawPie(uwCount, uwCount + unitWeight, radius, e.color);
-      uwCount += unitWeight;
+      drawPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
+
+      uwCount -= unitWeight;
     });
   }
   function showArrow() {
@@ -98,7 +115,6 @@ export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
   }
 
   function runRoulette() {
-    console.log(acceleration);
     const timer = setInterval(() => {
       degOffset += acceleration;
       drawRoulette(degOffset);
@@ -120,14 +136,14 @@ export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
       clearInterval(timer);
       acceleration = initialAcceleration;
       const currentDeg = Math.ceil(degOffset % 360);
-      console.log(currentDeg);
       const stopRouletteItem = rouletteItems.find((_, i) => {
         return currentDeg <= (i + 1) * unitWeight;
       });
       if (stopRouletteItem === undefined) {
         return;
       }
-      setResult(stopRouletteItem.name);
+      setResult(stopRouletteItem);
+      console.log(rouletteItems, stopRouletteItem, currentDeg, unitWeight);
       onStop && onStop(stopRouletteItem);
       setIsMoving(false);
     }, 10);
@@ -158,7 +174,16 @@ export const Roulette: FC<RouletteProps> = ({ rouletteItems, onStop }) => {
       >
         stop
       </Button>
-      <div>{result}</div>
+      <Button
+        onClick={() => {
+          if (result && onNext) {
+            onNext(result.id);
+          }
+        }}
+        isDisabled={isStopping || isMoving || !onStop || !onNext}
+      >
+        next
+      </Button>
     </>
   );
 };

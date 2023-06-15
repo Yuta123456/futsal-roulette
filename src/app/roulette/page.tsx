@@ -7,7 +7,7 @@ import {
   predicateItem,
   subjectItem,
 } from "../rouletteItems/rouletteItems";
-import { Text } from "@chakra-ui/react";
+import { Button, Text } from "@chakra-ui/react";
 export default function Home() {
   const [subject, setSubject] = useState("");
   const [predicate, setPredicate] = useState("");
@@ -16,13 +16,9 @@ export default function Home() {
     useState<RouletteItem[]>(subjectItem);
   const onSetSubject = (newSubject: RouletteItem) => {
     setSubject(newSubject.name);
-    const newRouletteItems = predicateItem[newSubject.id];
-    setRouletteItems(newRouletteItems);
   };
   const onSetPredicate = (newPredicate: RouletteItem) => {
     setPredicate(newPredicate.name);
-    const newRouletteItems = pointItems;
-    setRouletteItems(newRouletteItems);
   };
   const onSetPoint = (newPoint: RouletteItem) => {
     setPoint(newPoint.name);
@@ -39,12 +35,39 @@ export default function Home() {
       return onSetPoint;
     }
   })();
+  const onNext = (() => {
+    if (!predicate) {
+      return (id: number) => {
+        const newRouletteItems = predicateItem[id];
+        setRouletteItems(newRouletteItems);
+      };
+    }
+    if (!point) {
+      return (id: number) => {
+        const newRouletteItems = pointItems;
+        setRouletteItems(newRouletteItems);
+      };
+    }
+  })();
+
   return (
     <main>
-      <Roulette rouletteItems={rouletteItems} onStop={onStop} />
+      <Roulette rouletteItems={rouletteItems} onStop={onStop} onNext={onNext} />
       <Text>
         {subject} {predicate} {point}
       </Text>
+      {onStop === undefined && (
+        <Button
+          onClick={() => {
+            setSubject("");
+            setPredicate("");
+            setPoint("");
+            setRouletteItems(subjectItem);
+          }}
+        >
+          リセットする
+        </Button>
+      )}
     </main>
   );
 }
