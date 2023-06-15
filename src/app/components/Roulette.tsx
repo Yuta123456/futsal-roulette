@@ -7,6 +7,7 @@ type RouletteProps = {
   rouletteItems: RouletteItem[];
   onStop?: (stop: RouletteItem) => void;
   onNext?: (id: number) => void;
+  onReset: () => void;
 };
 
 const size = {
@@ -22,12 +23,13 @@ export const Roulette: FC<RouletteProps> = ({
   rouletteItems,
   onStop,
   onNext,
+  onReset,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const unitWeight = 360 / rouletteItems.length;
   const [result, setResult] = useState<RouletteItem>();
-  const [isMoving, setIsMoving] = useState(false);
-  const [isStopping, setIsStopping] = useState(true);
+  const [canClickButton, setCanClickButton] = useState("START");
+  const [isStopping, setIsStopping] = useState(false);
   const [rouletteTimer, setRouletteTimer] = useState<NodeJS.Timer>();
 
   const getContext = (): CanvasRenderingContext2D | undefined | null => {
@@ -65,7 +67,6 @@ export const Roulette: FC<RouletteProps> = ({
   ) {
     let _start_deg = ((360 - start_deg) * Math.PI) / 180;
     let _end_deg = ((360 - end_deg) * Math.PI) / 180;
-    console.log(_start_deg, _end_deg, text);
     const ctx = getContext();
     if (ctx === null || ctx === undefined) {
       return;
@@ -85,7 +86,6 @@ export const Roulette: FC<RouletteProps> = ({
     showArrow();
   }
   function drawRoulette(offset: number) {
-    console.log(offset % 360);
     const ctx = getContext();
     if (ctx === null || ctx === undefined) {
       return;
@@ -95,7 +95,6 @@ export const Roulette: FC<RouletteProps> = ({
 
     rouletteItems.forEach((e) => {
       drawPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
-
       uwCount -= unitWeight;
     });
   }
@@ -143,9 +142,9 @@ export const Roulette: FC<RouletteProps> = ({
         return;
       }
       setResult(stopRouletteItem);
-      console.log(rouletteItems, stopRouletteItem, currentDeg, unitWeight);
       onStop && onStop(stopRouletteItem);
-      setIsMoving(false);
+      setCanClickButton("NEXT");
+      setIsStopping(false);
     }, 10);
   };
   if (canvasRef === null || canvasRef === undefined) {
@@ -157,10 +156,9 @@ export const Roulette: FC<RouletteProps> = ({
       <Button
         onClick={() => {
           runRoulette();
-          setIsMoving(true);
-          setIsStopping(false);
+          setCanClickButton("STOP");
         }}
-        isDisabled={isMoving || !onStop}
+        isDisabled={!onStop || canClickButton !== "START"}
       >
         start
       </Button>
@@ -170,7 +168,7 @@ export const Roulette: FC<RouletteProps> = ({
           stopRoulette();
           setIsStopping(true);
         }}
-        isDisabled={isStopping || !onStop}
+        isDisabled={!onStop || canClickButton !== "STOP" || isStopping}
       >
         stop
       </Button>
@@ -179,10 +177,19 @@ export const Roulette: FC<RouletteProps> = ({
           if (result && onNext) {
             onNext(result.id);
           }
+          setCanClickButton("START");
         }}
-        isDisabled={isStopping || isMoving || !onStop || !onNext}
+        isDisabled={!onNext || canClickButton !== "NEXT"}
       >
         next
+      </Button>
+      <Button
+        onClick={() => {
+          setCanClickButton("START");
+          onReset();
+        }}
+      >
+        リセット
       </Button>
     </>
   );

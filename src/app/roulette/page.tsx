@@ -22,7 +22,6 @@ export default function Home() {
   };
   const onSetPoint = (newPoint: RouletteItem) => {
     setPoint(newPoint.name);
-    setRouletteItems([]);
   };
   const onStop = (() => {
     if (!subject) {
@@ -49,25 +48,23 @@ export default function Home() {
       };
     }
   })();
-
+  const onReset = () => {
+    setSubject("");
+    setPredicate("");
+    setPoint("");
+    setRouletteItems(subjectItem);
+  };
   return (
     <main>
-      <Roulette rouletteItems={rouletteItems} onStop={onStop} onNext={onNext} />
+      <Roulette
+        rouletteItems={rouletteItems}
+        onStop={onStop}
+        onNext={onNext}
+        onReset={onReset}
+      />
       <Text>
         {subject} {predicate} {point}
       </Text>
-      {onStop === undefined && (
-        <Button
-          onClick={() => {
-            setSubject("");
-            setPredicate("");
-            setPoint("");
-            setRouletteItems(subjectItem);
-          }}
-        >
-          リセットする
-        </Button>
-      )}
     </main>
   );
 }
