@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { rouletteItems } from "../rouletteItems/rouletteItems";
 
 type RouletteProps = {};
@@ -8,10 +8,18 @@ const size = {
   x: 300,
   y: 300,
 };
+const radius = 100;
+const unitWeight = 360 / rouletteItems.length;
+let degOffset = 0;
+const initialAcceleration = 100;
+let acceleration = initialAcceleration;
 export const Roulette: FC<RouletteProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  let radius = 100;
-  const unitWeight = 360 / rouletteItems.length;
+  const [result, setResult] = useState<string>();
+  const [isMoving, setIsMoving] = useState(false);
+  const [isStopping, setIsStopping] = useState(true);
+  const [rouletteTimer, setRouletteTimer] = useState<NodeJS.Timer>();
+
   const getContext = (): CanvasRenderingContext2D | undefined | null => {
     const canvas = canvasRef.current;
 
@@ -22,21 +30,24 @@ export const Roulette: FC<RouletteProps> = () => {
     if (ctx === undefined || ctx === null) {
       return;
     }
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.save();
     const canvas = canvasRef.current;
     if (canvas === null) {
       return;
     }
+    ctx.fillRect(0, 0, 100, 100);
+    // ctxの保存
+    ctx.save();
+
     canvas.width = size.x;
     canvas.height = size.y;
-    const dst = ctx.createImageData(canvas.width, canvas.height);
-    for (var i = 0; i < dst.data.length; i++) {
-      dst.data[i] = 255;
+    const image = ctx.createImageData(canvas.width, canvas.height);
+    for (let i = 0; i < image.data.length; i++) {
+      image.data[i] = 255;
     }
-    ctx.putImageData(dst, 0, 0);
+    ctx.putImageData(image, 0, 0);
     drawRoulette(0);
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function drawPie(
     start_deg: number,
@@ -44,8 +55,8 @@ export const Roulette: FC<RouletteProps> = () => {
     radius: number,
     color: string
   ) {
-    var _start_deg = ((360 - start_deg) * Math.PI) / 180;
-    var _end_deg = ((360 - end_deg) * Math.PI) / 180;
+    let _start_deg = ((360 - start_deg) * Math.PI) / 180;
+    let _end_deg = ((360 - end_deg) * Math.PI) / 180;
     const ctx = getContext();
     if (ctx === null || ctx === undefined) {
       return;
@@ -59,11 +70,11 @@ export const Roulette: FC<RouletteProps> = () => {
     showArrow();
   }
   function drawRoulette(offset: number) {
-    let uw_count = offset;
+    let uwCount = offset;
 
     rouletteItems.forEach((e) => {
-      drawPie(uw_count, uw_count + unitWeight, radius, e.color);
-      uw_count += unitWeight;
+      drawPie(uwCount, uwCount + unitWeight, radius, e.color);
+      uwCount += unitWeight;
     });
   }
   function showArrow() {
@@ -80,8 +91,66 @@ export const Roulette: FC<RouletteProps> = () => {
     ctx.fillStyle = "rgba(40,40,40)";
     ctx.fill();
   }
+
+  function runRoulette() {
+    console.log(acceleration);
+    const timer = setInterval(() => {
+      degOffset += acceleration;
+      drawRoulette(degOffset);
+    }, 10);
+    setRouletteTimer(timer);
+  }
+  const stopRoulette = () => {
+    const a = Math.ceil(Math.random() * 100) + 1000;
+    let cnt = 1;
+    const timer = setInterval(() => {
+      drawRoulette(degOffset);
+      cnt++;
+      const newAcceleration = a / cnt - 10;
+      acceleration = Math.min(newAcceleration, initialAcceleration);
+      degOffset += acceleration;
+      if (acceleration > 0) {
+        return;
+      }
+      clearInterval(timer);
+      acceleration = initialAcceleration;
+      const currentDeg = Math.ceil(degOffset % 360);
+      console.log(currentDeg);
+      setResult(() => {
+        return rouletteItems.find((_, i) => {
+          return currentDeg <= (i + 1) * unitWeight;
+        })?.name;
+      });
+      setIsMoving(false);
+    }, 10);
+  };
   if (canvasRef === null || canvasRef === undefined) {
     return;
   }
-  return <canvas className="canvas" ref={canvasRef} />;
+  return (
+    <>
+      <canvas className="canvas" ref={canvasRef} />
+      <button
+        onClick={() => {
+          runRoulette();
+          setIsMoving(true);
+          setIsStopping(false);
+        }}
+        disabled={isMoving}
+      >
+        start
+      </button>
+      <button
+        onClick={() => {
+          clearInterval(rouletteTimer);
+          stopRoulette();
+          setIsStopping(true);
+        }}
+        disabled={isStopping}
+      >
+        stop
+      </button>
+      <div>{result}</div>
+    </>
+  );
 };
