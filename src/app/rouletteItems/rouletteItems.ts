@@ -26,26 +26,7 @@ export const subjectItem: RouletteItem[] = [
     color: "#FDED9E",
   },
 ];
-// children: [
-//   {
-//     name: "「た」が入っている",
-//     color: "#FFCEBE",
-//   },
-//   {
-//     name: "「か」が入っている",
-//     color: "#CEFFBE",
-//   },
-// ],
-// children: [
-//   {
-//     name: "「赤」が入っている",
-//     color: "#FFCEBE",
-//   },
-//   {
-//     name: "「白」が入っている",
-//     color: "#CEFFBE",
-//   },
-// ],
+
 export const predicateItem: { [key: number]: RouletteItem[] } = {
   1: [
     {
@@ -58,6 +39,11 @@ export const predicateItem: { [key: number]: RouletteItem[] } = {
       name: "「か」が入っている",
       color: "#CEFFBE",
     },
+    {
+      id: 3,
+      name: "「す」が入っている",
+      color: "#CEBE11",
+    },
   ],
   2: [
     {
@@ -69,6 +55,11 @@ export const predicateItem: { [key: number]: RouletteItem[] } = {
       id: 2,
       name: "「白」が入っている",
       color: "#CEFFBE",
+    },
+    {
+      id: 3,
+      name: "「緑」が入っている",
+      color: "#CEFF11",
     },
   ],
   3: [

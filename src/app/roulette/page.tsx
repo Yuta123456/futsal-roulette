@@ -42,7 +42,7 @@ export default function Home() {
       };
     }
     if (!point) {
-      return (id: number) => {
+      return () => {
         const newRouletteItems = pointItems;
         setRouletteItems(newRouletteItems);
       };

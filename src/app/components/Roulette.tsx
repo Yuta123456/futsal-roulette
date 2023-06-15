@@ -65,8 +65,8 @@ export const Roulette: FC<RouletteProps> = ({
     color: string,
     text: string
   ) {
-    let _start_deg = ((360 - start_deg) * Math.PI) / 180;
-    let _end_deg = ((360 - end_deg) * Math.PI) / 180;
+    let _start_deg = toRadian(start_deg);
+    let _end_deg = toRadian(end_deg);
     const ctx = getContext();
     if (ctx === null || ctx === undefined) {
       return;
@@ -74,7 +74,7 @@ export const Roulette: FC<RouletteProps> = ({
     ctx.beginPath();
     ctx.moveTo(size.x / 2, size.y / 2);
     ctx.fillStyle = color;
-    ctx.arc(size.x / 2, size.y / 2, radius, _start_deg, _end_deg, true);
+    ctx.arc(size.x / 2, size.y / 2, radius, _start_deg, _end_deg);
     ctx.fill();
     ctx.fillStyle = "black";
     ctx.font = "13px Roboto medium";
@@ -92,10 +92,9 @@ export const Roulette: FC<RouletteProps> = ({
     }
     ctx.clearRect(0, 0, size.x, size.y);
     let uwCount = offset;
-
     rouletteItems.forEach((e) => {
       drawPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
-      uwCount -= unitWeight;
+      uwCount += unitWeight;
     });
   }
   function showArrow() {
@@ -116,6 +115,7 @@ export const Roulette: FC<RouletteProps> = ({
   function runRoulette() {
     const timer = setInterval(() => {
       degOffset += acceleration;
+      degOffset %= 360;
       drawRoulette(degOffset);
     }, 10);
     setRouletteTimer(timer);
@@ -124,23 +124,28 @@ export const Roulette: FC<RouletteProps> = ({
     const a = Math.ceil(Math.random() * 100) + 1000;
     let cnt = 1;
     const timer = setInterval(() => {
-      drawRoulette(degOffset);
       cnt++;
       const newAcceleration = a / cnt - 10;
       acceleration = Math.min(newAcceleration, initialAcceleration);
       degOffset += acceleration;
+      degOffset %= 360;
+      drawRoulette(degOffset);
       if (acceleration > 0) {
         return;
       }
+
       clearInterval(timer);
       acceleration = initialAcceleration;
       const currentDeg = Math.ceil(degOffset % 360);
-      const stopRouletteItem = rouletteItems.find((_, i) => {
-        return currentDeg <= (i + 1) * unitWeight;
-      });
-      if (stopRouletteItem === undefined) {
-        return;
-      }
+      console.log(currentDeg);
+      const stopRouletteItem =
+        rouletteItems.find((_, i) => {
+          return (
+            currentDeg + unitWeight * i < 270 &&
+            270 < currentDeg + unitWeight * (i + 1)
+          );
+        }) || rouletteItems[rouletteItems.length - 1];
+
       setResult(stopRouletteItem);
       onStop && onStop(stopRouletteItem);
       setCanClickButton("NEXT");
@@ -178,6 +183,7 @@ export const Roulette: FC<RouletteProps> = ({
             onNext(result.id);
           }
           setCanClickButton("START");
+          degOffset = 0;
         }}
         isDisabled={!onNext || canClickButton !== "NEXT"}
       >
@@ -193,4 +199,7 @@ export const Roulette: FC<RouletteProps> = ({
       </Button>
     </>
   );
+};
+const toRadian = (degree: number) => {
+  return (Math.PI / 180) * degree;
 };
