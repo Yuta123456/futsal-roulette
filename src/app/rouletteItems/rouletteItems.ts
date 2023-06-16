@@ -3,109 +3,188 @@ export type RouletteItem = {
   name: string;
   color: string;
 };
-
-export const subjectItem: RouletteItem[] = [
+export type OriginalRouletteItem = {
+  id: number;
+  name: string;
+};
+export const subjectItem: OriginalRouletteItem[] = [
   {
     id: 1,
     name: "名前に",
-    color: "#FFCEBE",
   },
   {
     id: 2,
     name: "今の服装に",
-    color: "#CEFFBE",
   },
   {
     id: 3,
-    name: "label3",
-    color: "#CEBEFF",
+    name: "彼女が",
   },
   {
     id: 4,
-    name: "label4",
-    color: "#FDED9E",
+    name: "今週の進捗が",
+  },
+  {
+    id: 5,
+    name: "一杯目が",
+  },
+  {
+    id: 6,
+    name: "高校の時の部活が",
   },
 ];
 
-export const predicateItem: { [key: number]: RouletteItem[] } = {
+export const predicateItem: { [key: number]: OriginalRouletteItem[] } = {
+  // 名前に
   1: [
     {
       id: 1,
-      name: "「た」が入っている",
-      color: "#FFCEBE",
+      name: "「た行」が入っている",
     },
     {
       id: 2,
-      name: "「か」が入っている",
-      color: "#CEFFBE",
+      name: "「か行」が入っている",
     },
     {
       id: 3,
-      name: "「す」が入っている",
-      color: "#CEBE11",
+      name: "「さ行」が入っている",
+    },
+    {
+      id: 4,
+      name: "「あ行」が入っている",
+    },
+    {
+      id: 5,
+      name: "「な行」が入っている",
+    },
+    {
+      id: 6,
+      name: "「は行」が入っている",
+    },
+    {
+      id: 7,
+      name: "「ま行」が入っている",
+    },
+    {
+      id: 8,
+      name: "「や行」が入っている",
     },
   ],
+  // 今の服装に
   2: [
     {
       id: 1,
       name: "「赤」が入っている",
-      color: "#FFCEBE",
     },
     {
       id: 2,
       name: "「白」が入っている",
-      color: "#CEFFBE",
     },
     {
       id: 3,
-      name: "「緑」が入っている",
-      color: "#CEFF11",
+      name: "「黄色」が入っている",
+    },
+    {
+      id: 4,
+      name: "「オレンジ」が入っている",
+    },
+    {
+      id: 5,
+      name: "「黒」が入っている",
     },
   ],
+  // 彼女が
   3: [
     {
       id: 1,
-      name: "「た」が入っている",
-      color: "#FFCEBE",
+      name: "いる人",
     },
     {
       id: 2,
-      name: "「か」が入っている",
-      color: "#CEFFBE",
+      name: "いない人",
     },
   ],
+  // 今週の進捗が
   4: [
     {
       id: 1,
-      name: "「た」が入っている",
-      color: "#FFCEBE",
+      name: "ある人",
     },
     {
       id: 2,
-      name: "「か」が入っている",
-      color: "#CEFFBE",
+      name: "ない人",
+    },
+  ],
+  // 一杯目が
+  5: [
+    {
+      id: 1,
+      name: "ビールの人",
+    },
+    {
+      id: 2,
+      name: "ハイボールの人",
+    },
+    {
+      id: 3,
+      name: "それ以外",
+    },
+  ],
+  // 高校の時の部活が
+  6: [
+    {
+      id: 1,
+      name: "野球部の人",
+    },
+    {
+      id: 2,
+      name: "テニス部の人",
+    },
+    {
+      id: 3,
+      name: "帰宅部の人",
+    },
+    {
+      id: 4,
+      name: "それ以外の人",
     },
   ],
 };
-export const pointItems = [
+export const pointItems: OriginalRouletteItem[] = [
   {
     id: 1,
     name: "0点",
-    color: "#CEBEFF",
   },
   {
     id: 2,
-    name: "1点",
-    color: "#CEBEFF",
+    name: "2点",
   },
   {
     id: 3,
     name: "2点",
-    color: "#FDED9E",
   },
   {
     id: 4,
+    name: "2点",
+  },
+  {
+    id: 5,
     name: "3点",
-    color: "#FDED9E",
+  },
+  {
+    id: 6,
+    name: "3点",
+  },
+  {
+    id: 7,
+    name: "3点",
+  },
+  {
+    id: 8,
+    name: "4点",
+  },
+  {
+    id: 9,
+    name: "5点",
   },
 ];

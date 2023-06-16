@@ -7,13 +7,15 @@ import {
   predicateItem,
   subjectItem,
 } from "../rouletteItems/rouletteItems";
-import { Button, Center, Container, Heading, Text } from "@chakra-ui/react";
+import { Center, Heading, Text } from "@chakra-ui/react";
+import { createRouletteItems } from "../rouletteItems/createRouletteItems";
 export default function Home() {
   const [subject, setSubject] = useState("");
   const [predicate, setPredicate] = useState("");
   const [point, setPoint] = useState("");
-  const [rouletteItems, setRouletteItems] =
-    useState<RouletteItem[]>(subjectItem);
+  const [rouletteItems, setRouletteItems] = useState<RouletteItem[]>(
+    createRouletteItems("SUBJECT", 0)
+  );
   const onSetSubject = (newSubject: RouletteItem) => {
     setSubject(newSubject.name);
   };
@@ -37,14 +39,14 @@ export default function Home() {
   const onNext = (() => {
     if (!predicate) {
       return (id: number) => {
-        const newRouletteItems = predicateItem[id];
+        const newRouletteItems = createRouletteItems("PREDICATE", id);
         setRouletteItems(newRouletteItems);
       };
     }
     if (!point) {
       return () => {
         const newRouletteItems = pointItems;
-        setRouletteItems(newRouletteItems);
+        setRouletteItems(createRouletteItems("POINT", 0));
       };
     }
   })();
@@ -52,7 +54,7 @@ export default function Home() {
     setSubject("");
     setPredicate("");
     setPoint("");
-    setRouletteItems(subjectItem);
+    setRouletteItems(createRouletteItems("SUBJECT", 0));
   };
   return (
     <Center flexFlow={"column"}>
