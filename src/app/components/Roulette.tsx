@@ -69,28 +69,25 @@ export const Roulette: FC<RouletteProps> = ({
     if (ctx === undefined || ctx === null) {
       return;
     }
-    const _start_deg = toRadian(start_deg);
-    const _end_deg = toRadian(end_deg);
-    const textCenter = (_start_deg + _end_deg) / 2;
-    const x = size.x / 2 + (radius / 2) * Math.cos(textCenter);
-    const y = size.y / 2 + (radius / 2) * Math.sin(textCenter);
-    let lineargradient = ctx.createLinearGradient(0, 0, x, 0);
-    let lineargradient2 = ctx.createLinearGradient(0, 0, 0, y);
-    let lineargradient3 = ctx.createLinearGradient(0, 0, x, y);
-
-    lineargradient.addColorStop(0, "#00ff00");
-    lineargradient.addColorStop(1, "#00fffb");
-    lineargradient2.addColorStop(0, "rgba(255,255,255,0)");
-    lineargradient2.addColorStop(1, "#ff0000");
-    lineargradient3.addColorStop(0, "rgba(255,255,255,0)");
-    lineargradient3.addColorStop(1, "#0000ff");
-
-    ctx.fillStyle = lineargradient;
-    drawPie(start_deg, end_deg, radius, lineargradient, text);
-    ctx.fillStyle = lineargradient2;
-    drawPie(start_deg, end_deg, radius, lineargradient2, text);
-    ctx.fillStyle = lineargradient3;
-    drawPie(start_deg, end_deg, radius, lineargradient3, text);
+    const gradient = ctx.createLinearGradient(0, 0, size.x, 0);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(0.17, "orange");
+    gradient.addColorStop(0.33, "yellow");
+    gradient.addColorStop(0.5, "green");
+    gradient.addColorStop(0.67, "blue");
+    gradient.addColorStop(0.83, "indigo");
+    gradient.addColorStop(1, "violet");
+    // ctx.strokeStyle = gradient;
+    drawPie(start_deg, end_deg, radius, gradient, text);
+    const gradient2 = ctx.createLinearGradient(0, 0, 0, size.y);
+    gradient.addColorStop(0, "red");
+    gradient.addColorStop(0.17, "orange");
+    gradient.addColorStop(0.33, "yellow");
+    gradient.addColorStop(0.5, "green");
+    gradient.addColorStop(0.67, "blue");
+    gradient.addColorStop(0.83, "indigo");
+    gradient.addColorStop(1, "violet");
+    drawPie(start_deg, end_deg, radius, gradient2, text);
   }
   function drawPie(
     start_deg: number,
@@ -127,7 +124,7 @@ export const Roulette: FC<RouletteProps> = ({
     ctx.clearRect(0, 0, size.x, size.y);
     let uwCount = offset;
     rouletteItems.forEach((e) => {
-      if (e.name) {
+      if (e.name === "5点") {
         drawRainbowPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
       } else {
         drawPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
