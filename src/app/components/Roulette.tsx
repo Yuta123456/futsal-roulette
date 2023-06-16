@@ -1,6 +1,6 @@
 "use client";
 import { FC, useEffect, useRef, useState } from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, Center, Container } from "@chakra-ui/react";
 import { RouletteItem } from "../rouletteItems/rouletteItems";
 
 type RouletteProps = {
@@ -156,40 +156,53 @@ export const Roulette: FC<RouletteProps> = ({
     return;
   }
   return (
-    <>
+    <Center flexFlow={"column"}>
       <canvas className="canvas" ref={canvasRef} />
+
+      {canClickButton === "START" && (
+        <Button
+          colorScheme="blue"
+          onClick={() => {
+            runRoulette();
+            setCanClickButton("STOP");
+          }}
+          isDisabled={!onStop || canClickButton !== "START"}
+        >
+          start
+        </Button>
+      )}
+      {canClickButton === "STOP" && (
+        <Button
+          colorScheme="blue"
+          onClick={() => {
+            clearInterval(rouletteTimer);
+            stopRoulette();
+            setIsStopping(true);
+          }}
+          isDisabled={!onStop || canClickButton !== "STOP" || isStopping}
+        >
+          stop
+        </Button>
+      )}
+
+      {canClickButton === "NEXT" && (
+        <Button
+          colorScheme="blue"
+          onClick={() => {
+            if (result && onNext) {
+              onNext(result.id);
+            }
+            setCanClickButton("START");
+            degOffset = 0;
+          }}
+          isDisabled={!onNext || canClickButton !== "NEXT"}
+        >
+          next
+        </Button>
+      )}
       <Button
-        onClick={() => {
-          runRoulette();
-          setCanClickButton("STOP");
-        }}
-        isDisabled={!onStop || canClickButton !== "START"}
-      >
-        start
-      </Button>
-      <Button
-        onClick={() => {
-          clearInterval(rouletteTimer);
-          stopRoulette();
-          setIsStopping(true);
-        }}
-        isDisabled={!onStop || canClickButton !== "STOP" || isStopping}
-      >
-        stop
-      </Button>
-      <Button
-        onClick={() => {
-          if (result && onNext) {
-            onNext(result.id);
-          }
-          setCanClickButton("START");
-          degOffset = 0;
-        }}
-        isDisabled={!onNext || canClickButton !== "NEXT"}
-      >
-        next
-      </Button>
-      <Button
+        colorScheme="red"
+        mt="20px"
         onClick={() => {
           setCanClickButton("START");
           onReset();
@@ -197,7 +210,7 @@ export const Roulette: FC<RouletteProps> = ({
       >
         リセット
       </Button>
-    </>
+    </Center>
   );
 };
 const toRadian = (degree: number) => {

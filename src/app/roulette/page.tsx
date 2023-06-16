@@ -7,7 +7,7 @@ import {
   predicateItem,
   subjectItem,
 } from "../rouletteItems/rouletteItems";
-import { Button, Text } from "@chakra-ui/react";
+import { Button, Center, Container, Heading, Text } from "@chakra-ui/react";
 export default function Home() {
   const [subject, setSubject] = useState("");
   const [predicate, setPredicate] = useState("");
@@ -55,16 +55,17 @@ export default function Home() {
     setRouletteItems(subjectItem);
   };
   return (
-    <main>
+    <Center flexFlow={"column"}>
+      <Heading>ルーレット</Heading>
       <Roulette
         rouletteItems={rouletteItems}
         onStop={onStop}
         onNext={onNext}
         onReset={onReset}
       />
-      <Text>
+      <Text fontSize={"3xl"}>
         {subject} {predicate} {point}
       </Text>
-    </main>
+    </Center>
   );
 }
