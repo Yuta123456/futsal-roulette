@@ -39,58 +39,58 @@ export const predicateItem: { [key: number]: OriginalRouletteItem[] } = {
   1: [
     {
       id: 1,
-      name: "「た行」が入っている",
+      name: "「た行」が入っている人",
     },
     {
       id: 2,
-      name: "「か行」が入っている",
+      name: "「か行」が入っている人",
     },
     {
       id: 3,
-      name: "「さ行」が入っている",
+      name: "「さ行」が入っている人",
     },
     {
       id: 4,
-      name: "「あ行」が入っている",
+      name: "「あ行」が入っている人",
     },
     {
       id: 5,
-      name: "「な行」が入っている",
+      name: "「な行」が入っている人",
     },
     {
       id: 6,
-      name: "「は行」が入っている",
+      name: "「は行」が入っている人",
     },
     {
       id: 7,
-      name: "「ま行」が入っている",
+      name: "「ま行」が入っている人",
     },
     {
       id: 8,
-      name: "「や行」が入っている",
+      name: "「や行」が入っている人",
     },
   ],
   // 今の服装に
   2: [
     {
       id: 1,
-      name: "「赤」が入っている",
+      name: "「赤」が入っている人",
     },
     {
       id: 2,
-      name: "「白」が入っている",
+      name: "「白」が入っている人",
     },
     {
       id: 3,
-      name: "「黄色」が入っている",
+      name: "「黄色」が入っている人",
     },
     {
       id: 4,
-      name: "「オレンジ」が入っている",
+      name: "「オレンジ」が入っている人",
     },
     {
       id: 5,
-      name: "「黒」が入っている",
+      name: "「黒」が入っている人",
     },
   ],
   // 彼女が
@@ -101,7 +101,7 @@ export const predicateItem: { [key: number]: OriginalRouletteItem[] } = {
     },
     {
       id: 2,
-      name: "いない人",
+      name: "一回も出来たことが無い人",
     },
   ],
   // 今週の進捗が
@@ -127,7 +127,7 @@ export const predicateItem: { [key: number]: OriginalRouletteItem[] } = {
     },
     {
       id: 3,
-      name: "それ以外",
+      name: "レモンサワーの人",
     },
   ],
   // 高校の時の部活が
@@ -142,11 +142,15 @@ export const predicateItem: { [key: number]: OriginalRouletteItem[] } = {
     },
     {
       id: 3,
-      name: "帰宅部の人",
+      name: "純帰宅部の人",
     },
     {
       id: 4,
-      name: "それ以外の人",
+      name: "卓球部の人",
+    },
+    {
+      id: 5,
+      name: "文化部の人",
     },
   ],
 };
