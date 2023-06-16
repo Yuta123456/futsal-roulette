@@ -58,11 +58,45 @@ export const Roulette: FC<RouletteProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rouletteItems]);
 
-  function drawPie(
+  function drawRainbowPie(
     start_deg: number,
     end_deg: number,
     radius: number,
     color: string,
+    text: string
+  ) {
+    const ctx = getContext();
+    if (ctx === undefined || ctx === null) {
+      return;
+    }
+    const _start_deg = toRadian(start_deg);
+    const _end_deg = toRadian(end_deg);
+    const textCenter = (_start_deg + _end_deg) / 2;
+    const x = size.x / 2 + (radius / 2) * Math.cos(textCenter);
+    const y = size.y / 2 + (radius / 2) * Math.sin(textCenter);
+    let lineargradient = ctx.createLinearGradient(0, 0, x, 0);
+    let lineargradient2 = ctx.createLinearGradient(0, 0, 0, y);
+    let lineargradient3 = ctx.createLinearGradient(0, 0, x, y);
+
+    lineargradient.addColorStop(0, "#00ff00");
+    lineargradient.addColorStop(1, "#00fffb");
+    lineargradient2.addColorStop(0, "rgba(255,255,255,0)");
+    lineargradient2.addColorStop(1, "#ff0000");
+    lineargradient3.addColorStop(0, "rgba(255,255,255,0)");
+    lineargradient3.addColorStop(1, "#0000ff");
+
+    ctx.fillStyle = lineargradient;
+    drawPie(start_deg, end_deg, radius, lineargradient, text);
+    ctx.fillStyle = lineargradient2;
+    drawPie(start_deg, end_deg, radius, lineargradient2, text);
+    ctx.fillStyle = lineargradient3;
+    drawPie(start_deg, end_deg, radius, lineargradient3, text);
+  }
+  function drawPie(
+    start_deg: number,
+    end_deg: number,
+    radius: number,
+    color: string | CanvasGradient,
     text: string
   ) {
     let _start_deg = toRadian(start_deg);
@@ -93,7 +127,11 @@ export const Roulette: FC<RouletteProps> = ({
     ctx.clearRect(0, 0, size.x, size.y);
     let uwCount = offset;
     rouletteItems.forEach((e) => {
-      drawPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
+      if (e.name) {
+        drawRainbowPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
+      } else {
+        drawPie(uwCount, uwCount + unitWeight, radius, e.color, e.name);
+      }
       uwCount += unitWeight;
     });
   }
