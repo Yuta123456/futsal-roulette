@@ -2,7 +2,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Button, Center, Container } from "@chakra-ui/react";
 import { RouletteItem } from "../rouletteItems/rouletteItems";
-
+import useSound from "use-sound";
 type RouletteProps = {
   rouletteItems: RouletteItem[];
   onStop?: (stop: RouletteItem) => void;
@@ -32,6 +32,12 @@ export const Roulette: FC<RouletteProps> = ({
   const [isStopping, setIsStopping] = useState(false);
   const [rouletteTimer, setRouletteTimer] = useState<NodeJS.Timer>();
 
+  const [playDrum, { stop: stopDrum }] = useSound("/drum.mp3", {
+    onEnd: () => {
+      playDrum();
+    },
+  });
+  const [playSeven, { stop: stopSeven }] = useSound("/seven.mp3", {});
   const getContext = (): CanvasRenderingContext2D | undefined | null => {
     const canvas = canvasRef.current;
 
@@ -155,6 +161,7 @@ export const Roulette: FC<RouletteProps> = ({
     }, 10);
     setRouletteTimer(timer);
   }
+
   const stopRoulette = () => {
     const a = Math.ceil(Math.random() * 100) + 1000;
     let cnt = 1;
@@ -185,6 +192,10 @@ export const Roulette: FC<RouletteProps> = ({
       onStop && onStop(stopRouletteItem);
       setCanClickButton("NEXT");
       setIsStopping(false);
+      stopDrum();
+      if (stopRouletteItem.name === "5点") {
+        playSeven();
+      }
     }, 10);
   };
   if (canvasRef === null || canvasRef === undefined) {
@@ -200,6 +211,8 @@ export const Roulette: FC<RouletteProps> = ({
           onClick={() => {
             runRoulette();
             setCanClickButton("STOP");
+            console.log("play");
+            playDrum();
           }}
           isDisabled={!onStop || canClickButton !== "START"}
         >
@@ -229,6 +242,8 @@ export const Roulette: FC<RouletteProps> = ({
             }
             setCanClickButton("START");
             degOffset = 0;
+            stopDrum();
+            stopSeven();
           }}
           isDisabled={!onNext || canClickButton !== "NEXT"}
         >
@@ -241,6 +256,8 @@ export const Roulette: FC<RouletteProps> = ({
         onClick={() => {
           setCanClickButton("START");
           onReset();
+          stopDrum();
+          stopSeven();
         }}
       >
         リセット
